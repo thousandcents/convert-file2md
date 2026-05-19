@@ -1,0 +1,211 @@
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│   convert-file2md — 安装说明                           │
+│   将 PDF / DOCX / PPTX / XLSX 文件转换为 Markdown      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+
+本文件面向两种使用场景：
+  A) 作为 Hermes Agent 技能安装
+  B) 作为独立命令行工具安装
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+目录：
+  1. 前置依赖
+  2. 场景 A：Hermes Agent 技能安装
+  3. 场景 B：独立 CLI 工具安装
+  4. 验证安装
+  5. 首次使用示例
+  6. 常见问题
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 前置依赖
+══════════════════════════════════════════════════════════
+
+  ☑ Python 3.7 或更高版本
+  ☑ pip（Python 包管理器）
+  ☑ git（用于克隆仓库）
+  ☑ curl（用于下载依赖）
+  ☑ [可选] Hermes Agent 环境（仅场景 A 需要）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. 场景 A：Hermes Agent 技能安装
+══════════════════════════════════════════════════════════
+
+  Step 1 — 安装 mineru 引擎
+  ──────────────────────────
+
+  Hermes Agent 默认自带 mineru（位于其 venv 中），
+  但建议单独安装以确保版本匹配：
+
+      pip install mineru
+
+  验证安装：
+
+      mineru --version
+      # 应输出类似: mineru, version 3.1.6
+
+  Step 2 — 克隆仓库到技能目录
+  ────────────────────────────
+
+      cd ~/.hermes/skills/
+      git clone https://github.com/thousandcents/convert-file2md.git
+
+  Step 3 — 配置 Hermes config.yaml
+  ────────────────────────────────
+
+  打开 ~/.hermes/config.yaml，在 skills: 段落添加：
+
+      skills:
+        convert-file2md:
+          path: ~/.hermes/skills/convert-file2md/convert2md.py
+
+  如果 config.yaml 中没有 skills: 段落，则新建一个。
+
+  Step 4 — 重启 Hermes Gateway
+  ─────────────────────────────
+
+      hermes gateway restart
+
+  或在 tmux 中重启对应的 gateway 进程。
+
+  Step 5 — 验证技能已加载
+  ────────────────────────
+
+  在对话中发送以下指令，看 agent 是否能正确响应：
+
+      "把这个 PDF 转成 md"
+      "帮我转换这个文件为 Markdown"
+
+  ✓ 完成！现在可以直接在对话中使用 convert-file2md 了。
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. 场景 B：独立 CLI 工具安装
+══════════════════════════════════════════════════════════
+
+  如果只是想用这个工具手动转换文件，不需要 Hermes Agent：
+
+  Step 1 — 克隆仓库
+
+      git clone https://github.com/thousandcents/convert-file2md.git
+      cd convert-file2md
+
+  Step 2 — 安装 mineru 引擎
+
+      pip install mineru
+
+  Step 3 — 验证安装
+
+      python3 convert2md.py --help
+
+      应显示完整的参数帮助信息。
+
+  可选 — 添加到 PATH（方便全局调用）
+
+      chmod +x convert2md.py
+      ln -s "$(pwd)/convert2md.py" ~/.local/bin/convert2md
+
+  然后就可以在任意目录调用：
+
+      convert2md -i 文档.pdf -o ./output/
+
+  ✓ 完成！
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. 验证安装
+══════════════════════════════════════════════════════════
+
+  运行以下命令确认一切正常：
+
+  ┌─────────────────────────────────────────────────────┐
+  │   $ python3 convert2md.py --help                   │
+  │                                                     │
+  │   usage: convert2md.py [-h] [-i PATH] [-o PATH]    │
+  │                        [-b BACKEND] [-m METHOD]    │
+  │                        [-l LANG]                   │
+  │                        [--keep-intermediates]      │
+  │                                                     │
+  │   Convert PDF, DOCX, PPTX, and XLSX files to       │
+  │   Markdown using mineru.                           │
+  └─────────────────────────────────────────────────────┘
+
+  $ python3 convert2md.py -i 样本文件.pdf -o ./test-output/
+  # 观察输出，确认没有报错
+
+  如果输出目录中出现转换后的 .md 文件，说明安装成功。
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. 首次使用示例
+══════════════════════════════════════════════════════════
+
+  ▸ 转换单个文件
+
+      python3 convert2md.py -i report.pdf -o ./output/
+
+  ▸ 批量转换目录下所有支持的文件
+
+      python3 convert2md.py -i ./我的文档/ -o ./output/
+
+  ▸ 中文文档（使用中文语言模型）
+
+      python3 convert2md.py -i 中文报告.pdf -o ./output/ -l ch
+
+  ▸ 扫描件 / 图片型 PDF（启用 OCR）
+
+      python3 convert2md.py -i 扫描件.pdf -o ./output/ -m ocr
+
+  ▸ 使用 VLM 后端（需额外配置）
+
+      python3 convert2md.py -i document.pdf -o ./output/ -b vlm-auto-engine
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6. 常见问题
+══════════════════════════════════════════════════════════
+
+  Q: 提示 "mineru not found"
+  A: 运行 pip install mineru 安装。安装后如果 still not found，
+     检查 mineru 是否在 PATH 中: which mineru
+
+  Q: 中文识别不准
+  A: 必须使用 -l ch 参数。默认语言是 en（英文），中文文档
+     不加此参数会导致识别效果很差。
+
+  Q: 繁体中文怎么处理？
+  A: 使用 -l chinese_cht
+
+  Q: 转换超时了
+  A: 单文件默认超时 600 秒（10 分钟）。大文件可以加 -m txt
+     跳过 OCR 以加快速度。
+
+  Q: 输出目录结构是什么样的？
+  A: 每个输入文件对应一个子目录：
+        output/
+        └── 文件名/
+            ├── 文件名.md
+            └── images/
+                ├── image1.png
+                └── image2.jpg
+
+  Q: 支持 .doc 旧版 Word 文件吗？
+  A: 不支持。仅支持 .pdf、.docx、.pptx、.xlsx 四种格式。
+     旧版 .doc 文件请先转换为 .docx。
+
+  Q: Hermes Agent 中 skill 加载不成功？
+  A: 检查 ~/.hermes/config.yaml 中 path 是否指向正确的路径，
+     然后重启 gateway: hermes gateway restart
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  官方仓库: https://github.com/thousandcents/convert-file2md
+  问题反馈: 请在 GitHub 仓库提交 Issue
